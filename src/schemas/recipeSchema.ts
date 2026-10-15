@@ -37,15 +37,11 @@ export const recipeSchema = z.object({
     .array(ingredientSchema)
     .min(1, { message: "You must add at least one ingredient" }),
 
-  instructions: z
-    .array(
-      z
-        .string()
-        .min(5, { message: "Instruction step must be at least 5 characters" }),
-    )
-    .min(1, { message: "You must add at least on instruction step" }),
+  instructions: z.array(
+    z.object({ step: z.number(), description: z.string() }),
+  ),
 
-  cookTime: z
+  cookingTime: z
     .number({ error: "Cooking time must be a number" })
     .int()
     .positive({ message: "Time must be greater than 0" }),
