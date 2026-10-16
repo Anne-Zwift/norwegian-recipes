@@ -36,7 +36,7 @@ export const mockRecipes: RecipeInput[] = [
           "Mix the minced meat well with the salt until it becomes sticky.",
       },
       {
-        step: 1,
+        step: 2,
         description:
           "Shape into patties and brown them in a frying pan with butter.",
       },
