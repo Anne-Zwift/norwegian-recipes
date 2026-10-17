@@ -13,13 +13,10 @@ createRoot(document.getElementById("root")!).render(
     {
       <QueryClientProvider client={queryClient}>
         {/*<RouterProvider router={router} />*/}
-        <div>
-          <h1>Norwegian Recipes</h1>
-          <p>Routing and TanStack Query in main.tsx</p>
-        </div>
+        <App />
+
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     }
-    <App />
   </StrictMode>,
 );
