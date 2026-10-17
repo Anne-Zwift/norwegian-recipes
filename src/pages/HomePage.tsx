@@ -5,7 +5,7 @@ export default function HomePage() {
         Welcome to Norwegian Recipes!
       </h1>
       <p className="text-gray-600 mb-6">
-        Here you can explore traditional dishes, manage recipes, and plan dinners.
+        Explore traditional dishes, manage recipes, and plan your dinner.
       </p>
     </div>
   );
