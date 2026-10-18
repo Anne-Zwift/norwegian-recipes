@@ -6,7 +6,7 @@ export default function RecipeList() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
-  const limit = 6;
+  const limit = 1;
 
   // 2. Call upon the (waiter) hook! It provides live statuses and data.
   const { data, isLoading, isError, error, isFetching } = useRecipes(
@@ -51,7 +51,7 @@ export default function RecipeList() {
         <h2 className="text-2xl font-bold text-gray-900">Explore Recipes</h2>
 
         <div className="flex gap-2 w-full md:w-auto">
-          {/* NY DROPDOWN FOR Å TEST SETCATEGORY: */}
+          {/* New DROPDOWN to TEST SETCATEGORY: */}
           <select
             value={category}
             onChange={(e) => {

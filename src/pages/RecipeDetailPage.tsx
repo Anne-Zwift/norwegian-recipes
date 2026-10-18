@@ -7,7 +7,12 @@ export default function RecipeDetailPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-gray-900">Recipe Details</h2>
-      <p className="text-sm text-gray-500 mt-2">Now showing recipe with ID: <code className="bg-gray-100 px-2 py-1 rounded font-mono text-amber-700">{recipeId}</code></p>
+      <p className="text-sm text-gray-500 mt-2">
+        Now showing recipe with ID:{" "}
+        <code className="bg-gray-100 px-2 py-1 rounded font-mono text-amber-700">
+          {recipeId}
+        </code>
+      </p>
     </div>
   );
 }

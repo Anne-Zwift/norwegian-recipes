@@ -1,4 +1,8 @@
-import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
 import App from "../App"; // App.tsx acts as a shell/layout (Root Route)
 import HomePage from "../pages/HomePage";
 import RecipesPage from "../pages/RecipesPage";
@@ -30,9 +34,9 @@ const recipeDetailRoute = createRoute({
 
 // 3. Assemble the route tree exactly as TanStack requires
 const routeTree = rootRoute.addChildren([
-  indexRoute, 
-  recipesRoute, 
-  recipeDetailRoute
+  indexRoute,
+  recipesRoute,
+  recipeDetailRoute,
 ]);
 
 // 4. Create and export the router instance itself
