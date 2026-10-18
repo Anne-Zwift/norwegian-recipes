@@ -23,6 +23,8 @@ export const recipesService = {
     limit = 6,
     searchTerm = "",
     category = "",
+    difficulty = "", // new parameter
+    maxTime: number | null = null, // new parameter (number or empty)
   ): Promise<PaginatedRecipesResponse> => {
     await delay(600); // Requirement 1: Simulate network latency (the app waits 600ms)
 
@@ -41,12 +43,25 @@ export const recipesService = {
           recipe.description.toLocaleLowerCase().includes(term),
       );
     }
-    // Requirement 4: Implement Category filtering
+    // Requirement 4: Implement Category filtering (lesson 3.3)
     if (category) {
       filtered = filtered.filter(
         (recipe) =>
           recipe.category.toLocaleLowerCase() === category.toLocaleLowerCase(),
       );
+    }
+
+    // new filter(step 7 kanban): combination logic for difficulty
+    if (difficulty) {
+      filtered = filtered.filter(
+        (recipe) =>
+          recipe.difficulty.toLocaleLowerCase() ===
+          difficulty.toLocaleLowerCase(),
+      );
+    }
+    // new filter (step 7 kanban): combination logic for cooking time
+    if (maxTime !== null && maxTime > 0) {
+      filtered = filtered.filter((recipe) => recipe.cookingTime <= maxTime);
     }
     // Requirement 5: Implement Pagination (.slice cuts list)
     const totalCount = filtered.length;
