@@ -14,11 +14,24 @@ export function useRecipes(
   limit = 6,
   searchTerm = "",
   category = "",
+  difficulty = "",
+  maxTime: number | null = null,
 ) {
   return useQuery({
-    queryKey: ["recipes", { page, limit, searchTerm, category }],
+    queryKey: [
+      "recipes",
+      { page, limit, searchTerm, category, difficulty, maxTime },
+    ],
 
-    queryFn: () => recipesService.getRecipes(page, limit, searchTerm, category),
+    queryFn: () =>
+      recipesService.getRecipes(
+        page,
+        limit,
+        searchTerm,
+        category,
+        difficulty,
+        maxTime,
+      ),
 
     placeholderData: (previousData: PaginatedRecipesResponse | undefined) =>
       previousData,
