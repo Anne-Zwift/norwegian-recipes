@@ -45,19 +45,21 @@ export const recipesService = {
     }
     // Requirement 4: Implement Category filtering (lesson 3.3)
     if (category) {
-      filtered = filtered.filter(
-        (recipe) =>
-          recipe.category.toLocaleLowerCase() === category.toLocaleLowerCase(),
-      );
+      const cleanCategory = category.trim().toLocaleLowerCase();
+      filtered = filtered.filter((recipe) => {
+        if (!recipe.category) return false;
+
+        return recipe.category.trim().toLocaleLowerCase() === cleanCategory;
+      });
     }
 
     // new filter(step 7 kanban): combination logic for difficulty
     if (difficulty) {
-      filtered = filtered.filter(
-        (recipe) =>
-          recipe.difficulty.toLocaleLowerCase() ===
-          difficulty.toLocaleLowerCase(),
-      );
+      const cleanDifficulty = difficulty.trim().toLocaleLowerCase();
+      filtered = filtered.filter((recipe) => {
+        if (!recipe.difficulty) return false;
+        return recipe.difficulty.trim().toLocaleLowerCase() === cleanDifficulty;
+      });
     }
     // new filter (step 7 kanban): combination logic for cooking time
     if (maxTime !== null && maxTime > 0) {

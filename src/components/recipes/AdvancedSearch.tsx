@@ -33,9 +33,9 @@ export default function AdvancedSearch({
   useEffect(() => {
     onSearchChange({
       searchTerm: debouncedSearchTerm,
-      category,
-      difficulty,
-      maxTime,
+      category: category,
+      difficulty: difficulty,
+      maxTime: maxTime,
     });
 
     // add search history if the search is long enough and remember upto 5

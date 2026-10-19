@@ -1,19 +1,33 @@
-import { useState } from "react";
 import { useRecipes } from "../../hooks/useRecipes";
 
-export default function RecipeList() {
-  // 1. Local state for pagination and search (hook up the URL router later)
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState("");
-  const limit = 1;
+// 1. Define a type-safe interface for the props coming from above
+interface RecipeListProps {
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  limit: number;
+  searchTerm: string;
+  category: string;
+  difficulty: string;
+  maxTime: number | null;
+}
 
+export default function RecipeList({
+  page,
+  setPage,
+  limit,
+  searchTerm,
+  category,
+  difficulty,
+  maxTime,
+}: RecipeListProps) {
   // 2. Call upon the (waiter) hook! It provides live statuses and data.
   const { data, isLoading, isError, error, isFetching } = useRecipes(
     page,
     limit,
     searchTerm,
     category,
+    difficulty,
+    maxTime,
   );
   // Handling the initial loading state (Requirement: "Simulate network delays")
   if (isLoading) {
@@ -47,44 +61,25 @@ export default function RecipeList() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">Explore Recipes</h2>
-
-        <div className="flex gap-2 w-full md:w-auto">
-          {/* New DROPDOWN to TEST SETCATEGORY: */}
-          <select
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setPage(1); // Reset to page 1 when a new filter is applied
-            }}
-            className="px-3 py-2 border rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-          >
-            <option value="">All categories</option>
-            <option value="meat">Meat</option>
-            <option value="fish">Fish</option>
-            <option value="vegan">Vegan</option>
-          </select>
-
-          {/* Simple search field to test the search logic in our API live */}
-          <input
-            type="text"
-            placeholder="Search recipes..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(1); // Reset to page 1 for new search
-            }}
-            className="px-4 py-2 border rounded-md w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-amber-500"
-          />
-        </div>
+      <div className="mb-6 flex justify-between items-center border-b pb-4">
+        <h2 className="text-xl font-bold text-gray-800">
+          {isFetching ? "Update results..." : "Search results"}
+        </h2>
+        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+          Showing {data?.data.length || 0} of {data?.meta.totalCount || 0}{" "}
+          recipes.
+        </span>
       </div>
-
-      {/* If no search matches */}
+      {/* If no recipes match the combination search */}
       {data?.data.length === 0 && (
-        <p className="text-center text-gray-500 my-8">
-          No recipes matched your search.
-        </p>
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed my-8">
+          <p className="text-gray-500 font-medium">
+            No match found for this combination
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Try resetting some of the filters
+          </p>
+        </div>
       )}
 
       {/* Recipe List */}

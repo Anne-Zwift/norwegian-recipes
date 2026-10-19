@@ -76,7 +76,7 @@ export const mockRecipes: RecipeInput[] = [
       },
       {
         step: 2,
-        description: "Damp the cod.",
+        description: "Steam the cod.",
       },
     ],
   },
