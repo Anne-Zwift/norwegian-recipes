@@ -93,4 +93,63 @@ export const recipesService = {
     }
     return recipe;
   },
+  // C. SIMULATED ENDPOINT: POST /recipes/ (Create a new recipe)
+  createRecipe: async (
+    newRecipeData: Omit<
+      RecipeInput,
+      "id" | "createdAt" | "updatedAt" | "ratings"
+    >,
+  ): Promise<RecipeInput> => {
+    await delay(500); // Requirement: Simulate network latency (the app waits 500 ms)
+
+    // Create a complete RecipeInput object by automatically generating backend values
+    const createRecipe: RecipeInput = {
+      ...newRecipeData,
+      id: `recipe-${Date.now()}`, // generates a unique ID based on timestamp
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      // standard values for new recipes
+      ratings: {
+        average: 0,
+        count: 0,
+      },
+      author: newRecipeData.author || {
+        id: "author-current",
+        name: "Anne-Zwift",
+        avatar: "https://example.com",
+      },
+    };
+
+    // "save" in local database
+    mockRecipes.push(createRecipe);
+
+    return createRecipe;
+  },
+
+  // D. SIMULATED ENDPOINT: PUT /recipes/:id (Update existing recipe)
+  updateRecipe: async (
+    id: string,
+    updatedData: Partial<RecipeInput>,
+  ): Promise<RecipeInput> => {
+    await delay(500);
+
+    // Find the index of the recipe in the database
+    const recipeIndex = mockRecipes.findIndex((r) => r.id === id);
+
+    if (recipeIndex) {
+      throw new Error(
+        `Could not update recipe. Recipe ID ${id} was not found.`,
+      );
+    }
+    // merge changes
+    const updatedRecipe: RecipeInput = {
+      ...mockRecipes[recipeIndex],
+      ...updatedData,
+      updatedAt: new Date().toISOString(), // adds a date for the change
+    };
+    // rewrites old data
+    mockRecipes[recipeIndex] = updatedRecipe;
+
+    return updatedRecipe;
+  },
 };
