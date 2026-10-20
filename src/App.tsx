@@ -20,6 +20,12 @@ function App() {
             >
               Recipes
             </Link>
+            <Link
+              to="/recipes/create"
+              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-semibold text-xs shadow-sm [&.active]:bg-amber-800"
+            >
+              ➕ Add Recipe
+            </Link>
           </div>
         </nav>
       </header>

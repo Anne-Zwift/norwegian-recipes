@@ -43,6 +43,11 @@ export default function RecipeForm({
       tags: ["dinner"],
       ingredients: [{ name: "", amount: "", unit: "g" }],
       instructions: [{ step: 1, description: "" }],
+      author: {
+        id: "author-current",
+        name: "Anne-Zwift",
+        avatar: "https://example.com",
+      },
     },
   });
 
@@ -68,7 +73,12 @@ export default function RecipeForm({
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, (validationErrors) => {
+        console.log(
+          "❌ Zod Submission stopped! Validation error:",
+          validationErrors,
+        );
+      })}
       className="space-y-6 max-w-2xl mx-auto bg-white p-6 rounded-xl border shadow-sm"
     >
       <h2 className="text-xl font-bold text-gray-900 border-b pb-2">

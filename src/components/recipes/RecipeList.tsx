@@ -1,4 +1,5 @@
 import { useRecipes } from "../../hooks/useRecipes";
+import { Link } from "@tanstack/react-router";
 
 // 1. Define a type-safe interface for the props coming from above
 interface RecipeListProps {
@@ -109,6 +110,17 @@ export default function RecipeList({
               <span>📊 {recipe.difficulty}</span>
               <span>👤 {recipe.author.name}</span>
             </div>
+            {/* NEW TYPE-SAFE EDIT LINK: Placed directly on the card! */}
+            {/* Use e.stopPropagation() to prevent the app from opening the details page when the intention is actually to edit */}
+
+            <Link
+              to="/recipes/$recipeId/edit"
+              params={{ recipeId: recipe.id }}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-4 px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-amber-100 hover:text-amber-800 transition font-medium"
+            >
+              ✏️ Edit
+            </Link>
           </div>
         ))}
       </div>

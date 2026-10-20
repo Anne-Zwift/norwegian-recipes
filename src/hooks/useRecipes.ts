@@ -58,7 +58,7 @@ export function useCreateRecipe() {
     onSuccess: () => {
       // We ask the cache to mark ALL queries starting with "recipes" as outdated.
       // This triggers an automatic, silent background update in the UI!
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: ["recipes"], exact: false }); // // exact: false, forces the check to clear ALL lists, regardless of search/filter!
     },
   });
 }
@@ -77,7 +77,7 @@ export function useUpdateRecipe() {
     // success updates both the specific detail page and the main list in the cache
     onSuccess: (_data, variables) => {
       // Invalidates the main list
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: ["recipes"], exact: false }); // exact: false, forces the check to clear ALL lists, regardless of search/filter!
       // Invalidates the detail page for this specific recipe (so that the changes appear there immediately)
       queryClient.invalidateQueries({ queryKey: ["recipe", variables.id] });
     },

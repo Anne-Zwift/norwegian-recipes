@@ -13,8 +13,8 @@ export const mockRecipes: RecipeInput[] = [
     difficulty: "easy",
     category: "meat",
     tags: ["tradition", "dinner", "autumn"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: "2026-10-19T16:00:00.000Z",
+    updatedAt: "2026-10-19T16:00:00.000Z",
     author: {
       id: "author-1",
       name: "Grandmother Astrid",
@@ -53,8 +53,8 @@ export const mockRecipes: RecipeInput[] = [
     difficulty: "easy",
     category: "fish",
     tags: ["tradition", "dinner", "autumn"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: "2026-10-19T16:00:00.000Z",
+    updatedAt: "2026-10-19T16:00:00.000Z",
     author: {
       id: "author-2",
       name: "Grandfather Tim",
@@ -90,8 +90,8 @@ export const mockRecipes: RecipeInput[] = [
     difficulty: "easy",
     category: "vegan",
     tags: ["vegetables", "side-dish", "summer"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: "2026-10-19T16:00:00.000Z",
+    updatedAt: "2026-10-19T16:00:00.000Z",
     author: {
       id: "author-3",
       name: "Anne-Zwift",

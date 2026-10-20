@@ -86,7 +86,7 @@ export const recipesService = {
   getRecipeById: async (id: string): Promise<RecipeInput> => {
     await delay(400);
 
-    const recipe = mockRecipes.find((r) => r.id === id);
+    const recipe = mockRecipes.find((r) => r.id === String(id));
 
     if (!recipe) {
       throw new Error(`Recipe with ID ${id} was not found.`);
@@ -134,9 +134,10 @@ export const recipesService = {
     await delay(500);
 
     // Find the index of the recipe in the database
-    const recipeIndex = mockRecipes.findIndex((r) => r.id === id);
+    const cleanId = String(id).trim();
+    const recipeIndex = mockRecipes.findIndex((r) => String(r.id) === cleanId);
 
-    if (recipeIndex) {
+    if (recipeIndex === -1) {
       throw new Error(
         `Could not update recipe. Recipe ID ${id} was not found.`,
       );

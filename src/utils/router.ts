@@ -7,6 +7,8 @@ import App from "../App"; // App.tsx acts as a shell/layout (Root Route)
 import HomePage from "../pages/HomePage";
 import RecipesPage from "../pages/RecipesPage";
 import RecipeDetailPage from "../pages/RecipeDetailPage";
+import CreateRecipePage from "../pages/CreateRecipePage";
+import EditRecipePage from "../pages/EditRecipePage";
 
 // 1. Define the root route (our shell, which owns the navigation bar and the <Outlet />)
 const rootRoute = createRootRoute({
@@ -32,11 +34,25 @@ const recipeDetailRoute = createRoute({
   component: RecipeDetailPage,
 });
 
+const createRecipeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/recipes/create",
+  component: CreateRecipePage,
+});
+
+const editRecipeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/recipes/$recipeId/edit",
+  component: EditRecipePage,
+});
+
 // 3. Assemble the route tree exactly as TanStack requires
 const routeTree = rootRoute.addChildren([
   indexRoute,
   recipesRoute,
   recipeDetailRoute,
+  createRecipeRoute,
+  editRecipeRoute,
 ]);
 
 // 4. Create and export the router instance itself
