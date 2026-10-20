@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Link } from "@tanstack/react-router";
 import { useInfiniteRecipes } from "../../hooks/useInfiniteRecipes";
+import RecipeCard from "./RecipeCard";
 
 interface RecipeListProps {
   searchTerm: string;
@@ -74,8 +74,21 @@ export default function RecipeList({
 
   if (isLoading) {
     return (
-      <div className="p-12 text-center text-gray-500 animate-pulse font-medium">
-        Loading recipes...
+      <div className="p-6 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="p-5 border rounded-lg bg-white animate-pulse min-h-55 flex flex-col justify-between"
+          >
+            <div>
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+            <div className="h-4 bg-gray-200 rounded w-1/3 mt-4"></div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -132,49 +145,19 @@ export default function RecipeList({
                 data-index={virtualRow.index}
                 ref={rowVirtualizer.measureElement}
                 className="absolute top-0 left-0 w-full grid grid-cols-1 md:grid-cols-2 gap-4 pb-4"
-                style={{
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
+                style={{ transform: `translateY(${virtualRow.start}px)` }}
               >
                 {rowRecipes.map((recipe) => (
-                  <Link
-                    to="/recipes/$recipeId"
-                    params={{ recipeId: recipe.id }}
-                    key={recipe.id}
-                    className="p-5 border rounded-lg shadow-sm hover:shadow-md transition bg-white flex flex-col justify-between text-left cursor-pointer hover:border-amber-500 min-h-55"
-                  >
-                    <div>
-                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full">
-                        {recipe.category}
-                      </span>
-                      <h3 className="text-lg font-bold mt-2 text-gray-800 line-clamp-1">
-                        {recipe.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs mt-1 line-clamp-2">
-                        {recipe.description}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t flex justify-between items-center text-[11px] text-gray-500">
-                      <div className="flex gap-2">
-                        <span>⏱️ {recipe.cookingTime} min</span>
-                        <span>📊 {recipe.difficulty}</span>
-                      </div>
-                      <span className="px-2 py-0.5 bg-gray-100 rounded text-[10px]">
-                        ✏️ Edit card
-                      </span>
-                    </div>
-                  </Link>
+                  // maps out optimized RecipeCards!
+                  <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
               </div>
             );
           })}
         </div>
-
-        {/* Loading indicator at the bottom of the scroll container when new pages are fetched silently */}
         {isFetchingNextPage && (
           <div className="text-center py-4 text-xs font-semibold text-amber-600 animate-pulse">
-            🔄 Retrieving more recipes from the server...
+            🔄 Fetching more recipes...
           </div>
         )}
       </div>
