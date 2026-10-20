@@ -119,3 +119,32 @@ export const mockRecipes: RecipeInput[] = [
     ],
   },
 ];
+
+// PERFORMANCE OPTIMIZATION: AUTOMATIC VIRTUAL LIST GENERATOR (100+)
+// a function that takes the existing recipes and adds 100 copies
+
+const generateMassiveRecipeArray = (): RecipeInput[] => {
+  const baseRecipes = [...mockRecipes]; // Getting your meatballs, cod, and salad
+  const massiveList: RecipeInput[] = [];
+
+  // We run a loop that iterates 35 times, creating 3 recipes per round (35 * 3 = 105 in total!)
+  for (let i = 1; i <= 35; i++) {
+    baseRecipes.forEach((recipe, index) => {
+      massiveList.push({
+        ...recipe,
+        id: `recipe-virtual-${i}-${index}`, // Every single recipe MUST have a unique ID!
+        title: `${recipe.title} (Batch #${i})`, // Changing the title so we can see the scrolling in action
+        cookingTime: recipe.cookingTime + (i % 3) * 5, // Vary the cooking time a bit for added realism.
+      });
+    });
+  }
+
+  return massiveList;
+};
+
+// NOW OVERWRITE THE EXPORT:
+// merges the unique starting recipes with the massive list of 105 items!
+export const extendedMockRecipes = [
+  ...mockRecipes,
+  ...generateMassiveRecipeArray(),
+];

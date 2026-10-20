@@ -1,5 +1,5 @@
 import type { RecipeInput } from "../schemas/recipeSchema";
-import { mockRecipes } from "./mockData";
+import { extendedMockRecipes as mockRecipes } from "./mockData";
 
 // 1. A helper function that forces the app to wait (simulates network latency)
 const delay = (ms: number) =>
