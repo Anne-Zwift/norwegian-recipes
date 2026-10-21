@@ -3,16 +3,33 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
+import { createElement } from "react";
 import App from "../App"; // App.tsx acts as a shell/layout (Root Route)
 import HomePage from "../pages/HomePage";
 import RecipesPage from "../pages/RecipesPage";
 import RecipeDetailPage from "../pages/RecipeDetailPage";
 import CreateRecipePage from "../pages/CreateRecipePage";
 import EditRecipePage from "../pages/EditRecipePage";
+import ErrorBoundary from "../components/common/ErrorBoundary";
+
+// Refactor: A functional wrapper that satisfies TanStack Router's 'ErrorRouteComponent' type
+function RootErrorComponent({ error }: { error: unknown }) {
+  return createElement(
+    ErrorBoundary,
+    null,
+    createElement(function ThrowErrorComponent() {
+      throw error;
+    }),
+  );
+}
 
 // 1. Define the root route (our shell, which owns the navigation bar and the <Outlet />)
+// attaches the error handling directly to the root route
 const rootRoute = createRootRoute({
   component: App,
+  // If a catastrophic error occurs during routing or data flow,
+  // TanStack Router will automatically roll out your error boundary as a safety net!
+  errorComponent: RootErrorComponent,
 });
 
 // 2. Define the specific pages from your `pages` folder as routes
