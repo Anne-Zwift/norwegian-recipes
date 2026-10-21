@@ -75,7 +75,7 @@ export default function RecipeForm({
     <form
       onSubmit={handleSubmit(onSubmit, (validationErrors) => {
         console.log(
-          "❌ Zod Submission stopped! Validation error:",
+          "Zod Submission stopped! Validation error:",
           validationErrors,
         );
       })}
@@ -211,6 +211,11 @@ export default function RecipeForm({
                 placeholder="Unit (g, dl)"
                 className="w-20 px-3 py-1.5 border rounded-lg text-sm"
               />
+              {errors.ingredients?.[index]?.name && (
+                <p className="text-xs text-red-500 font-medium">
+                  {errors.ingredients[index].name.message}
+                </p>
+              )}
               {ingredientFields.length > 1 && (
                 <button
                   type="button"
@@ -249,6 +254,11 @@ export default function RecipeForm({
                 rows={1}
                 className="flex-1 px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
               />
+              {errors.instructions?.[index]?.description && (
+                <p className="text-xs text-red-500 font-medium">
+                  {errors.instructions[index].description.message}
+                </p>
+              )}
               {instructionFields.length > 1 && (
                 <button
                   type="button"
