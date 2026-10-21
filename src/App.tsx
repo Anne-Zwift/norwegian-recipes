@@ -1,5 +1,6 @@
 import { Outlet, Link } from "@tanstack/react-router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 function App() {
   return (
@@ -30,8 +31,12 @@ function App() {
         </nav>
       </header>
       <main className="flex-1">
+        {/* Main content secured with ErrorBoundary */}
         {/* The new engine—test it live on screen! */}
-        <Outlet />
+        {/* SAFEGUARD 1: If a subpage crashes, the top menu remains visible above the error screen! */}
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       {/* The cache developer tool is safely located at the bottom */}
       <ReactQueryDevtools initialIsOpen={false} />

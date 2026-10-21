@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import AdvancedSearch from "../components/recipes/AdvancedSearch";
 import RecipeList from "../components/recipes/RecipeList";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 
 export default function RecipesPage() {
   // 1. Central states that consolidate all filter selections in one place
@@ -39,12 +40,21 @@ export default function RecipesPage() {
 
       {/* 3. THE DISPLAY LIST: Pass all the new filters in as props! */}
       {/* Since the state has been moved up, we need to adjust RecipeList to accept these as props. */}
-      <RecipeList
-        searchTerm={filters.searchTerm}
-        category={filters.category}
-        difficulty={filters.difficulty}
-        maxTime={filters.maxTime}
-      />
+      {/* SAFEGUARD 2: Isolation at the component level in RecipesPage.tsx */}
+      <ErrorBoundary
+        fallback={
+          <div className="p-6 text-center text-red-500 font-medium border border-dashed rounded-xl bg-red-50">
+            Unable to generate the recipe list right now.
+          </div>
+        }
+      >
+        <RecipeList
+          searchTerm={filters.searchTerm}
+          category={filters.category}
+          difficulty={filters.difficulty}
+          maxTime={filters.maxTime}
+        />
+      </ErrorBoundary>
     </div>
   );
 }

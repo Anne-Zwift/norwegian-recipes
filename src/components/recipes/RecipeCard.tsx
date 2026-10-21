@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { type RecipeInput } from "../../schemas/recipeSchema";
 
 interface RecipeCardProps {
@@ -8,10 +8,12 @@ interface RecipeCardProps {
 
 // OPTIMIZATION 1: React.memo prevents re-rendering during infinite scrolling!
 const RecipeCard = React.memo(function RecipeCard({ recipe }: RecipeCardProps) {
+  const navigate = useNavigate();
   return (
-    <Link
-      to="/recipes/$recipeId"
-      params={{ recipeId: recipe.id }}
+    <div
+      onClick={() =>
+        navigate({ to: "/recipes/$recipeId", params: { recipeId: recipe.id } })
+      }
       className="p-5 border rounded-lg shadow-sm hover:shadow-md transition bg-white flex flex-col justify-between text-left cursor-pointer hover:border-amber-500 min-h-55"
     >
       <div>
@@ -54,7 +56,7 @@ const RecipeCard = React.memo(function RecipeCard({ recipe }: RecipeCardProps) {
           className="w-8 h-8 rounded-full object-cover border"
         />
       </div>
-    </Link>
+    </div>
   );
 });
 
