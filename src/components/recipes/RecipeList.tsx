@@ -25,6 +25,7 @@ export default function RecipeList({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteRecipes({
     searchTerm,
     category,
@@ -95,9 +96,25 @@ export default function RecipeList({
 
   if (isError) {
     return (
-      <div className="p-12 text-center text-red-500 font-medium">
-        Could not fetch:{" "}
-        {error instanceof Error ? error.message : "Unknown Error"}
+      <div className="max-w-4xl mx-auto my-8 p-6 bg-red-50 border border-red-200 rounded-xl text-center shadow-sm">
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-3xl">📡</span>
+          <h3 className="text-lg font-bold text-red-800">
+            Temporary network error
+          </h3>
+          <p className="text-sm text-red-600 max-w-md">
+            {error instanceof Error
+              ? error.message
+              : "Could not establish a stable connection to the recipe database."}
+          </p>
+          {/* RETRY MECHANISM: Trigger a manual re-fetch of the infinite list immediately! */}
+          <button
+            onClick={() => refetch()}
+            className="mt-2 px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition shadow-sm"
+          >
+            Try again
+          </button>
+        </div>
       </div>
     );
   }
