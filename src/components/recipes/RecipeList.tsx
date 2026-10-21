@@ -1,11 +1,9 @@
-import { useRecipes } from "../../hooks/useRecipes";
-import { Link } from "@tanstack/react-router";
+import { useRef, useEffect } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useInfiniteRecipes } from "../../hooks/useInfiniteRecipes";
+import RecipeCard from "./RecipeCard";
 
-// 1. Define a type-safe interface for the props coming from above
 interface RecipeListProps {
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  limit: number;
   searchTerm: string;
   category: string;
   difficulty: string;
@@ -13,140 +11,156 @@ interface RecipeListProps {
 }
 
 export default function RecipeList({
-  page,
-  setPage,
-  limit,
   searchTerm,
   category,
   difficulty,
   maxTime,
 }: RecipeListProps) {
-  // 2. Call upon the (waiter) hook! It provides live statuses and data.
-  const { data, isLoading, isError, error, isFetching } = useRecipes(
-    page,
-    limit,
+  // 1. connecting to the infinite data engine!
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteRecipes({
     searchTerm,
     category,
     difficulty,
     maxTime,
-  );
-  // Handling the initial loading state (Requirement: "Simulate network delays")
+    limit: 6,
+  });
+
+  // 2. FLATTEN THE DATA:
+  // Since useInfiniteQuery returns pages containing arrays, merge them into one long, combined array!
+  const allRecipes = data ? data.pages.flatMap((page) => page.data) : [];
+
+  // 3. This is the scroll window (the viewport container)
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  // 4. THE VIRTUALIZATION ENGINE:
+  // Calculates rows based on 2 columns in a grid (number of elements divided by 2)
+  const rowVirtualizer = useVirtualizer({
+    count: Math.ceil(allRecipes.length / 2),
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 240, // The height of a card in pixels
+    overscan: 2, // Renders 2 extra rows in the buffer for silky-smooth scrolling
+  });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+
+  // 5. AUTOMATIC PRE-FETCHING (Infinite scrolling):
+  // Monitors the rows being rendered. If the very last virtual row appears on the screen,
+  // TanStack Query automatically requests the next page from the simulated server!
+  useEffect(() => {
+    if (virtualItems.length === 0) return;
+
+    const lastItem = virtualItems[virtualItems.length - 1];
+    const totalRows = Math.ceil(allRecipes.length / 2);
+
+    // If the user approaches the bottom, there is more data, and we are not already fetching:
+    if (lastItem.index >= totalRows - 1 && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [
+    virtualItems,
+    allRecipes.length,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  ]);
+
   if (isLoading) {
     return (
-      <div className="p-6 text-center text-gray-500 animate-pulse">
-        <p className="text-xl font-semibold">Fetching recipes...</p>
-        <p className="text-sm">
-          Waiting for the simulated server response (600ms)
-        </p>
+      <div className="p-6 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="p-5 border rounded-lg bg-white animate-pulse min-h-55 flex flex-col justify-between"
+          >
+            <div>
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+            <div className="h-4 bg-gray-200 rounded w-1/3 mt-4"></div>
+          </div>
+        ))}
       </div>
     );
   }
 
-  // Robust error handling (Requirement: "Simulate occasional errors")
   if (isError) {
     return (
-      <div className="p-6 my-4 bg-red-50 border border-red-200 rounded-md text-red-700">
-        <h3 className="font-bold text-lg">Oops! Something went wrong</h3>
-        <p className="text-sm">
-          {error instanceof Error ? error.message : "Unknown Error"}
+      <div className="p-12 text-center text-red-500 font-medium">
+        Could not fetch:{" "}
+        {error instanceof Error ? error.message : "Unknown Error"}
+      </div>
+    );
+  }
+
+  if (allRecipes.length === 0) {
+    return (
+      <div className="text-center py-12 bg-white rounded-xl border border-dashed my-8 max-w-4xl mx-auto">
+        <p className="text-gray-500 font-medium">
+          No recipes matched this filter combination.
         </p>
-        <button
-          onClick={() => setPage(page)} // force re-fetch
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Try again
-        </button>
       </div>
     );
   }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-6 flex justify-between items-center border-b pb-4">
-        <h2 className="text-xl font-bold text-gray-800">
-          {isFetching ? "Update results..." : "Search results"}
-        </h2>
-        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
-          Showing {data?.data.length || 0} of {data?.meta.totalCount || 0}{" "}
-          recipes.
+      <div className="mb-4 flex justify-between items-center pb-2 border-b">
+        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+          Infinite Scrolling & DOM Virtualization Active
+        </span>
+        <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+          Show {allRecipes.length} dishes
         </span>
       </div>
-      {/* If no recipes match the combination search */}
-      {data?.data.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-xl border border-dashed my-8">
-          <p className="text-gray-500 font-medium">
-            No match found for this combination
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            Try resetting some of the filters
-          </p>
-        </div>
-      )}
 
-      {/* Recipe List */}
+      {/* THE SCROLLING WINDOW (Viewport): Must have a fixed height and overflow-y-auto */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-100 transition-opacity duration-200"
-        style={{ opacity: isFetching ? 0.7 : 1 }}
+        ref={parentRef}
+        className="border rounded-xl bg-gray-50 p-4 shadow-inner overflow-y-auto"
+        style={{ height: "600px" }}
       >
-        {data?.data.map((recipe) => (
-          <div
-            key={recipe.id}
-            className="p-5 border rounded-lg shadow-sm hover:shadow-md transition bg-white flex flex-col justify-between"
-          >
-            <div>
-              <span className="text-xs font-semibold uppercase px-2 py-1 bg-amber-100 text-amber-800 rounded-full">
-                {recipe.category}
-              </span>
-              <h3 className="text-xl font-semibold mt-2 text-gray-800">
-                {recipe.title}
-              </h3>
-              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                {recipe.description}
-              </p>
-            </div>
+        {/* TOTAL-HEIGHT CONTAINER: Simulates the actual length of the scrollbar */}
+        <div
+          className="w-full relative"
+          style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+        >
+          {/* MAPPING OF THE VIRTUAL ROWS: Only the visible elements are present in the HTML code */}
+          {virtualItems.map((virtualRow) => {
+            const firstIndex = virtualRow.index * 2;
+            const rowRecipes = allRecipes.slice(firstIndex, firstIndex + 2);
 
-            <div className="mt-4 pt-4 border-t flex justify-between text-xs text-gray-500">
-              <span>⏱️ {recipe.cookingTime} min</span>
-              <span>📊 {recipe.difficulty}</span>
-              <span>👤 {recipe.author.name}</span>
-            </div>
-            {/* NEW TYPE-SAFE EDIT LINK: Placed directly on the card! */}
-            {/* Use e.stopPropagation() to prevent the app from opening the details page when the intention is actually to edit */}
-
-            <Link
-              to="/recipes/$recipeId/edit"
-              params={{ recipeId: recipe.id }}
-              onClick={(e) => e.stopPropagation()}
-              className="mt-4 px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-amber-100 hover:text-amber-800 transition font-medium"
-            >
-              ✏️ Edit
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination-Controller (Demand: "Include pagination parameters") */}
-      {data?.meta && data.meta.pageCount > 1 && (
-        <div className="flex justify-center items-center mt-8 gap-4">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 font-medium transition"
-          >
-            Previous
-          </button>
-          <span className="text-sm font-medium text-gray-700">
-            Side {data.meta.currentPage} of {data.meta.pageCount}
-          </span>
-          <button
-            disabled={!data.meta.hasMore}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 font-medium transition"
-          >
-            Next
-          </button>
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
+                className="absolute top-0 left-0 w-full grid grid-cols-1 md:grid-cols-2 gap-4 pb-4"
+                style={{ transform: `translateY(${virtualRow.start}px)` }}
+              >
+                {rowRecipes.map((recipe) => (
+                  // maps out optimized RecipeCards!
+                  <RecipeCard key={recipe.id} recipe={recipe} />
+                ))}
+              </div>
+            );
+          })}
         </div>
-      )}
+        {isFetchingNextPage && (
+          <div className="text-center py-4 text-xs font-semibold text-amber-600 animate-pulse">
+            🔄 Fetching more recipes...
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -11,9 +11,6 @@ export default function RecipesPage() {
     maxTime: null as number | null,
   });
 
-  const [page, setPage] = useState(1);
-  const limit = 6;
-
   // Helper function called every time a filter changes in AdvancedSearch
   const handleFilterChange = useCallback(
     (newFilters: {
@@ -23,7 +20,6 @@ export default function RecipesPage() {
       maxTime: number | null;
     }) => {
       setFilters(newFilters);
-      setPage(1); //REQUIREMENT: ALWAYS reset to page 1 when the user changes the search or filter!
     },
     [],
   );
@@ -44,9 +40,6 @@ export default function RecipesPage() {
       {/* 3. THE DISPLAY LIST: Pass all the new filters in as props! */}
       {/* Since the state has been moved up, we need to adjust RecipeList to accept these as props. */}
       <RecipeList
-        page={page}
-        setPage={setPage}
-        limit={limit}
         searchTerm={filters.searchTerm}
         category={filters.category}
         difficulty={filters.difficulty}
